@@ -1,0 +1,28 @@
+import React from 'react';
+import { ActivityIndicator, Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Bell, CalendarDays, ChevronRight, HeartHandshake, Play, Sparkles } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import AppScreen from '../components/AppScreen';
+import { useAuth } from '../context/AuthContext';
+import { useHome } from '../hooks/useHome';
+import { useAppContent } from '../hooks/useAppContent';
+import { assetUrl } from '../api/axios';
+import { colors, shadows } from '../theme';
+
+export default function HomeDashboardScreen() {
+    const navigation = useNavigation<any>(); const { user } = useAuth(); const home = useHome(); const content = useAppContent('home'); const refreshing = home.isRefetching || content.isRefetching;
+    const latest = home.data?.video_sermons?.[0] || home.data?.audio_sermons?.[0]; const event = home.data?.events?.[0]; const devotional = content.data?.sections?.home?.['daily-devotional']?.[0]; const announcements = content.data?.sections?.home?.announcements || [];
+    const refresh = () => { home.refetch(); content.refetch(); };
+    if (home.isLoading && content.isLoading) return <AppScreen><ActivityIndicator color={colors.coral} style={{ flex: 1 }} /></AppScreen>;
+    return <AppScreen><ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[colors.coral]} />} contentContainerStyle={{ padding: 20, paddingBottom: 115 }} showsVerticalScrollIndicator={false}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}><View><Text style={{ color: colors.muted }}>Hello!</Text><Text style={{ color: colors.text, fontSize: 22, fontWeight: '800' }}>{user?.name}</Text></View><TouchableOpacity onPress={() => navigation.navigate('ProfileHub')} style={{ width: 46, height: 46, borderRadius: 16, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', ...shadows.card }}><Bell color={colors.navy} size={22} /></TouchableOpacity></View>
+        <View style={{ backgroundColor: colors.navy, borderRadius: 30, overflow: 'hidden', ...shadows.card }}>
+            {latest?.thumbnail && <Image source={{ uri: assetUrl(latest.thumbnail) }} style={{ width: '100%', height: 185, opacity: .72 }} />}
+            <View style={{ padding: 22 }}><Text style={{ color: '#FFB19D', fontWeight: '800', letterSpacing: 1.3 }}>{home.data?.live_stream ? 'LIVE NOW' : 'LATEST MESSAGE'}</Text><Text numberOfLines={2} style={{ color: '#fff', fontSize: 28, lineHeight: 34, fontWeight: '800', marginTop: 8 }}>{home.data?.live_stream?.title || latest?.title || 'Welcome to The Refiners Church'}</Text><TouchableOpacity onPress={() => home.data?.live_stream ? navigation.navigate('Live') : latest && navigation.navigate('SermonDetails', { sermon: latest })} style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', backgroundColor: colors.coral, paddingHorizontal: 17, paddingVertical: 12, borderRadius: 16, marginTop: 17 }}><Play color="#fff" fill="#fff" size={16}/><Text style={{ color: '#fff', fontWeight: '800', marginLeft: 8 }}>Watch now</Text></TouchableOpacity></View>
+        </View>
+        <Text style={{ color: colors.text, fontSize: 25, fontWeight: '800', marginTop: 26 }}>Today at church</Text>
+        <TouchableOpacity onPress={() => devotional && navigation.navigate('ContentList', { title: 'Daily Devotional', section: 'home', category: 'daily-devotional' })} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF0EC', borderRadius: 22, padding: 18, marginTop: 13 }}><View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: colors.coral, alignItems: 'center', justifyContent: 'center' }}><Sparkles color="#fff" size={22}/></View><View style={{ flex: 1, marginLeft: 14 }}><Text style={{ color: colors.text, fontSize: 17, fontWeight: '800' }}>Daily Devotional</Text><Text numberOfLines={1} style={{ color: colors.muted, marginTop: 4 }}>{devotional?.title || 'Start your day in the Word'}</Text></View><ChevronRight color={colors.coral}/></TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Events')} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, padding: 18, marginTop: 12, ...shadows.card }}><CalendarDays color={colors.navy} size={25}/><View style={{ flex: 1, marginLeft: 14 }}><Text style={{ color: colors.text, fontSize: 17, fontWeight: '800' }}>Upcoming Service</Text><Text numberOfLines={1} style={{ color: colors.muted, marginTop: 4 }}>{event ? `${event.title} · ${event.event_date}` : 'View church events'}</Text></View><ChevronRight color={colors.coral}/></TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 12, marginTop: 14 }}><TouchableOpacity onPress={() => navigation.navigate('PrayerRequest')} style={{ flex: 1, backgroundColor: colors.coral, borderRadius: 22, padding: 18 }}><HeartHandshake color="#fff"/><Text style={{ color: '#fff', fontSize: 17, fontWeight: '800', marginTop: 25 }}>Prayer</Text><Text style={{ color: '#FFE3DC', marginTop: 4 }}>We’re with you</Text></TouchableOpacity><TouchableOpacity onPress={() => navigation.navigate('ContentList', { title: 'Announcements', section: 'home', category: 'announcements' })} style={{ flex: 1, backgroundColor: colors.navySoft, borderRadius: 22, padding: 18 }}><Bell color="#fff"/><Text style={{ color: '#fff', fontSize: 17, fontWeight: '800', marginTop: 25 }}>Updates</Text><Text style={{ color: '#D6DFEE', marginTop: 4 }}>{announcements.length} announcement{announcements.length === 1 ? '' : 's'}</Text></TouchableOpacity></View>
+    </ScrollView></AppScreen>;
+}

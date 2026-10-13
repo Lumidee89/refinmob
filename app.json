@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "church-app",
+    "name": "The Refiners Church",
     "slug": "church-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,14 +17,29 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "edgeToEdgeEnabled": false,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.olu898.churchapp"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#F5F4F8",
+      "barStyle": "dark-content",
+      "translucent": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fd871cb8-67fa-4cd9-8540-60cd43cdd0c9"
+      }
+    },
+    "owner": "olu898",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
